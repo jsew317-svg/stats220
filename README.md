@@ -20,7 +20,7 @@ I am currently undertaking a *conjoint degree in Engineering and Science* at uni
 * Operations research
 * Data analytics
 
-You can learn more about data science here:
+I found an interesting website about data science here:
 [IBM: What is Data Science?](https://www.ibm.com/topics/data-science)
 
 ## How I currently feel about university

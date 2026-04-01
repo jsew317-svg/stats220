@@ -1,0 +1,131 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+```
+
+```{r}
+library(tidyverse)
+
+logged_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRHaMrOqii2tFpTH9s4SEv7Wv1PNuF7fwck5SOM9F2pXzyNibgYcm4KyM9qoM3O0jDUcoFIKnN7K4gF/pub?output=csv")
+
+# Renaming columns
+latest_data <- logged_data %>%
+  rename(
+    timestamp = `Timestamp`,
+    campus = `UoA or AUT Campus?`,
+    building_num = `What was the building number of the observation? (Enter answer without B, i.e., for building 110N, don't use B110N, use 110N) Link to map for convenience.`,
+    building_name = `What was the building name of the observation? (Use capitals) Link to map for convenience.`,
+    time = `What was the time of the observation?`,
+    date = `What was the date of the observation?`,
+    quantity = `Quantity of same brand seen in the location? (e.g., 2 at one table)`,
+    brand = `What was the brand of the drink?`
+  )
+
+# Summary values
+min_quantity <- min(latest_data$quantity, na.rm = TRUE)
+max_quantity <- max(latest_data$quantity, na.rm = TRUE)
+mean_quantity <- mean(latest_data$quantity, na.rm = TRUE)
+median_quantity <- median(latest_data$quantity, na.rm = TRUE)
+mode_quantity <- names(which.max(table(latest_data$quantity)))
+num_rows <- nrow(latest_data)
+earliest_date <- min(latest_data$date, na.rm = TRUE)
+latest_date <- max(latest_data$date, na.rm = TRUE)
+most_common_brand <- names(which.max(table(latest_data$brand)))
+most_common_campus <- names(which.max(table(latest_data$campus)))
+```
+
+```{css}
+body {
+  font-family: "Arial", sans-serif;
+  text-align: center;             /* Center all text */
+  background-color: #f9f9f9;      /* Soft light background */
+  color: #333;                     /* Dark text for readability */
+  line-height: 1.6;                /* Better spacing */
+  margin: 20px;
+}
+h1, h2, h3 {
+  text-align: center;              /* Center headings */
+  color: #2a9d8f;                  /* Teal headings */
+  text-shadow: 1px 1px 2px #ccc;   /* Subtle shadow for 3D effect */
+}
+h2 {
+  font-size: 2.5em;
+  margin-bottom: 0.5em;
+}
+h3 {
+  font-size: 1.5em;
+  margin-top: 0.8em;
+}
+img {
+  border: 2px solid #2a9d8f;  /* add border around the plot */
+  border-radius: 15px; 
+  max-width: 80%;              /* scale the plot */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover */
+  display: block;
+  margin: 0 auto;              /* center the plot */
+  box-shadow: 3px 3px 6px #aaa; /* add shadow */
+}
+img:hover {
+  transform: translateY(-10px) scale(1.02); /* Move up slightly and grow */
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.3); /* Shadow becomes stronger */
+  cursor: pointer;                       /* Optional: pointer to indicate interaction */
+}
+p {
+  font-size: 1.1em;
+  margin: 0.8em auto;
+  max-width: 700px;                /* Limit width for readability */
+}
+```
+
+## Energy Drink Observations
+
+This dynamic report takes a look at the observations collected from our Google Form collected across 2 campuses, UoA and AUT. It tracks how many drinks were observed, what brand they were, date, and campus.
+
+### Summary of Observations
+
+There were a total of `r num_rows` energy drink observations recorded.
+
+The earliest observation was on `r earliest_date` and the latest observation was on `r latest_date`.
+
+## Bar Charts
+
+```{r}
+ggplot(latest_data, aes(x = brand)) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Brand Distribution of Energy Drinks",
+       x = "Brand",
+       y = "Count") +
+  theme_minimal()
+```
+
+The brand most frequently observed was `r most_common_brand`.
+
+```{r}
+ggplot(latest_data, aes(x = campus)) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Distribution of Campus Observations",
+       x = "Campus",
+       y = "Number") +
+  theme_minimal()
+```
+
+The campus with the higher proportion of observations is `r most_common_campus`.
+
+```{r}
+ggplot(latest_data, aes(x = quantity)) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Number of Energy Drinks per Observation",
+       x = "Quantity",
+       y = "Amount") +
+  theme_minimal()
+```
+
+The most frequently observed number of drinks per observation was `r mode_quantity`.
+
+
+
